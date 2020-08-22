@@ -205,15 +205,15 @@ CREATE TABLE EMAR_DETAIL
 	Infusion_Rate_Adjustment VARCHAR(50),
 	Infusion_Rate_Adjustment_Amount VARCHAR(30),
 	Infusion_Rate_Units VARCHAR(30),
-	Route VARCHAR(5),
+	Route VARCHAR(50),
 	Infusion_Complete VARCHAR(255),
 	Completion_Interval VARCHAR(30),
-	New_IV_Bag_Hung VARCHAR(1),
-	Continued_infusion_in_other_location VARCHAR(1),
-	Restart_Interval VARCHAR(30),
-	Side VARCHAR(10),
+	New_IV_Bag_Hung VARCHAR(50),
+	Continued_infusion_in_other_location VARCHAR(50),
+	Restart_Interval VARCHAR(50),
+	Side VARCHAR(100),
 	Site VARCHAR(255),
-	non_formulary_visual_verification VARCHAR(1)
+	non_formulary_visual_verification VARCHAR(50)
 ) ;
 
 --------------------------------------------------------
