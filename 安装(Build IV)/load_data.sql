@@ -166,4 +166,4 @@
 --  Load Data for Table PROCEDUREEVENTS
 --------------------------------------------------------
 
-\copy PROCEDUREEVENTS from 'PROCEDUREEVENTS.csv' delimiter ',' csv header NULL ''
+\copy PROCEDUREEVENTS from 'procedureevents.csv' delimiter ',' csv header NULL ''
