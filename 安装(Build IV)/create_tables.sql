@@ -57,8 +57,8 @@ DROP TABLE IF EXISTS TRANSFERS CASCADE;
 CREATE TABLE TRANSFERS
 (
 	subject_id INT NOT NULL,
-	hadm_id INT NOT NULL,
-  	transfer_id INT,
+	hadm_id INT,
+  	transfer_id INT NOT NULL,
 	eventtype VARCHAR(20),
 	careunit VARCHAR(255),
 	intime TIMESTAMP(0),
@@ -115,7 +115,7 @@ DROP TABLE IF EXISTS D_LABITEMS CASCADE;
 CREATE TABLE D_LABITEMS
 (
 	itemid INT NOT NULL,
-	label VARCHAR(50) NOT NULL,
+	label VARCHAR(50),
 	fluid VARCHAR(50) NOT NULL,
 	category VARCHAR(50) NOT NULL,
 	loinc_code VARCHAR(50),
@@ -183,7 +183,7 @@ CREATE TABLE EMAR_DETAIL
 (
 	subject_id INT NOT NULL,
 	emar_id VARCHAR(25) NOT NULL,
-	emar_seq INT NOT NULL,
+	emar_seq INT,
 	parent_field_ordinal NUMERIC(5,3),
 	administration_types VARCHAR(50),
 	pharmacy_id INT,
