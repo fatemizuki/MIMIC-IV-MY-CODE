@@ -39,8 +39,8 @@ CREATE TABLE PATIENTS
 	subject_id INT NOT NULL,
 	gender VARCHAR(1) NOT NULL,
 	anchor_age INT,
-  anchor_year INT,
-  anchor_year_group VARCHAR(255),
+  	anchor_year INT,
+  	anchor_year_group VARCHAR(255),
 	dod TIMESTAMP(0)
 ) ;
 
@@ -54,11 +54,212 @@ CREATE TABLE TRANSFERS
 	subject_id INT NOT NULL,
 	hadm_id INT NOT NULL,
 	stay_id INT,
-  transfer_id INT,
+  	transfer_id INT,
 	eventtype VARCHAR(10),
 	careunit VARCHAR(255),
 	intime TIMESTAMP(0),
 	outtime TIMESTAMP(0)
+) ;
+
+--------------------------------------------------------
+--  DDL for Table D_HCPCS
+--------------------------------------------------------
+
+DROP TABLE IF EXISTS D_HCPCS CASCADE;
+CREATE TABLE D_HCPCS
+(
+	code CHAR(5),
+	category SMALLINT,
+	long_description TEXT,
+	short_description VARCHAR(180)
+) ;
+
+--------------------------------------------------------
+--  DDL for Table D_ICD_DIAGNOSES
+--------------------------------------------------------
+
+DROP TABLE IF EXISTS D_ICD_DIAGNOSES CASCADE;
+CREATE TABLE D_ICD_DIAGNOSES
+(
+	icd_code VARCHAR(10) NOT NULL,
+	icd_version INT NOT NULL,
+	long_title VARCHAR(300) NOT NULL
+) ;
+
+--------------------------------------------------------
+--  DDL for Table D_ICD_PROCEDURES
+--------------------------------------------------------
+
+DROP TABLE IF EXISTS D_ICD_PROCEDURES CASCADE;
+CREATE TABLE D_ICD_PROCEDURES
+(
+	icd_code VARCHAR(10) NOT NULL,
+	icd_version INT NOT NULL,
+	long_title VARCHAR(300) NOT NULL
+) ;
+
+--------------------------------------------------------
+--  DDL for Table D_LABITEMS
+--------------------------------------------------------
+
+DROP TABLE IF EXISTS D_LABITEMS CASCADE;
+CREATE TABLE D_LABITEMS
+(
+	itemid INT NOT NULL,
+	label VARCHAR(50) NOT NULL,
+	fluid VARCHAR(50) NOT NULL,
+	category VARCHAR(50) NOT NULL,
+	loinc_code VARCHAR(50)
+) ;
+
+--------------------------------------------------------
+--  DDL for Table DIAGNOSES_ICD
+--------------------------------------------------------
+
+DROP TABLE IF EXISTS DIAGNOSES_ICD CASCADE;
+CREATE TABLE DIAGNOSES_ICD
+(
+	subject_id INT NOT NULL,
+	hadm_id INT NOT NULL,
+	seq_num INT,
+	icd_code CHAR(7),
+	icd_version INT
+) ;
+
+--------------------------------------------------------
+--  DDL for Table DRGCODES
+--------------------------------------------------------
+
+DROP TABLE IF EXISTS DRGCODES CASCADE;
+CREATE TABLE DRGCODES
+(
+	subject_id INT NOT NULL,
+	hadm_id INT NOT NULL,
+	drg_type VARCHAR(4),
+	drg_code VARCHAR(10),
+	description VARCHAR(195),
+	drg_severity SMALLINT,
+	drg_mortality SMALLINT
+) ;
+
+--------------------------------------------------------
+--  DDL for Table EMAR
+--------------------------------------------------------
+
+DROP TABLE IF EXISTS EMAR CASCADE;
+CREATE TABLE EMAR
+(
+	subject_id INT NOT NULL,
+	hadm_id INT NOT NULL,
+	emar_id VARCHAR(100) NOT NULL,
+	emar_seq INT NOT NULL,
+	poe_id VARCHAR(25) NOT NULL,
+	charttime TIMESTAMP(0) NOT NULL,
+	medication TEXT,
+	event_txt TEXT,
+	scheduletime TIMESTAMP(0),
+	storetime TIMESTAMP(0) NOT NULL
+) ;
+
+--------------------------------------------------------
+--  DDL for Table EMAR_DETAIL
+--------------------------------------------------------
+
+DROP TABLE IF EXISTS EMAR_DETAIL CASCADE;
+CREATE TABLE EMAR_DETAIL
+(
+	subject_id INT NOT NULL,
+	emar_id VARCHAR(25) NOT NULL,
+	emar_seq INT NOT NULL,
+	parent_field_ordinal NUMERIC(5,3),
+	administration_types VARCHAR(50),
+	pharmacy_id INT,
+	barcode_type VARCHAR(4),
+	Reason_for_No_Barcode TEXT,
+	Complete_Dose_Not_Given VARCHAR(5),
+	Dose_Due VARCHAR(50),
+	Dose_Due_Unit VARCHAR(50),
+	Dose_Given VARCHAR(255),
+	Dose_Given_Unit VARCHAR(50),
+	will_remainder_of_dose_be_given VARCHAR(5),
+	Product_Amount_Given VARCHAR(30),
+	Product_Unit VARCHAR(30),
+	Product_Code VARCHAR(30),
+	Product_Description VARCHAR(255),
+	Product_Description_Other VARCHAR(255),
+	Prior_Infusion_Rate VARCHAR(20),
+	Infusion_Rate VARCHAR(20),
+	Infusion_Rate_Adjustment VARCHAR(50),
+	Infusion_Rate_Adjustment_Amount VARCHAR(30),
+	Infusion_Rate_Units VARCHAR(30),
+	Route VARCHAR(5),
+	Infusion_Complete VARCHAR(255),
+	Completion_Interval VARCHAR(30),
+	New_IV_Bag_Hung VARCHAR(1),
+	Continued_infusion_in_other_location VARCHAR(1),
+	Restart_Interval VARCHAR(30),
+	Side VARCHAR(10),
+	Site VARCHAR(255),
+	non_formulary_visual_verification VARCHAR(1)
+) ;
+
+--------------------------------------------------------
+--  DDL for Table HCPCSEVENTS
+--------------------------------------------------------
+
+DROP TABLE IF EXISTS HCPCSEVENTS CASCADE;
+CREATE TABLE HCPCSEVENTS
+(
+	subject_id INT NOT NULL,
+	hadm_id INT NOT NULL,
+	hcpcs_cd CHAR(5),
+	seq_num INT,
+	short_description TEXT
+) ;
+
+
+--------------------------------------------------------
+--  DDL for Table LABEVENTS
+--------------------------------------------------------
+
+DROP TABLE IF EXISTS LABEVENTS CASCADE;
+CREATE TABLE LABEVENTS
+(
+	SUBJECT_ID INT NOT NULL,
+	HADM_ID INT,
+	ITEMID INT NOT NULL,
+	CHARTTIME TIMESTAMP(0),
+	VALUE VARCHAR(200),
+	VALUENUM DOUBLE PRECISION,
+	VALUEUOM VARCHAR(20),
+	FLAG VARCHAR(20),
+	CONSTRAINT labevents_rowid_pk PRIMARY KEY (ROW_ID)
+) ;
+
+--------------------------------------------------------
+--  DDL for Table MICROBIOLOGYEVENTS
+--------------------------------------------------------
+
+DROP TABLE IF EXISTS MICROBIOLOGYEVENTS CASCADE;
+CREATE TABLE MICROBIOLOGYEVENTS
+(
+  ROW_ID INT NOT NULL,
+	SUBJECT_ID INT NOT NULL,
+	HADM_ID INT,
+	CHARTDATE TIMESTAMP(0),
+	CHARTTIME TIMESTAMP(0),
+	SPEC_ITEMID INT,
+	SPEC_TYPE_DESC VARCHAR(100),
+	ORG_ITEMID INT,
+	ORG_NAME VARCHAR(100),
+	ISOLATE_NUM SMALLINT,
+	AB_ITEMID INT,
+	AB_NAME VARCHAR(30),
+	DILUTION_TEXT VARCHAR(10),
+	DILUTION_COMPARISON VARCHAR(20),
+	DILUTION_VALUE DOUBLE PRECISION,
+	INTERPRETATION VARCHAR(5),
+	CONSTRAINT micro_rowid_pk PRIMARY KEY (ROW_ID)
 ) ;
 
 --------------------------------------------------------
