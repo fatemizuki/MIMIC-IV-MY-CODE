@@ -247,7 +247,7 @@ CREATE TABLE LABEVENTS
 	itemid INT NOT NULL,
 	charttime TIMESTAMP(0) NOT NULL,
 	storetime TIMESTAMP(0),
-	value VARCHAR(200),,
+	value VARCHAR(200),
 	valuenum DOUBLE PRECISION,
 	valueuom VARCHAR(20),
 	ref_range_lower DOUBLE PRECISION,
