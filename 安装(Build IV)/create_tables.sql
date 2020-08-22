@@ -1,7 +1,8 @@
 -- -------------------------------------------------------------------------------
 --
--- Create the MIMIC-III tables
+-- Create the MIMIC-IV tables
 -- Adapted from https://github.com/MIT-LCP/mimic-code/blob/master/buildmimic/postgres/postgres_create_tables.sql
+-- Adapted from https://github.com/YIKUAN8/MIMIC-IV-Postgres/blob/master/create_tables.sql
 --
 -- -------------------------------------------------------------------------------
 
@@ -18,15 +19,17 @@ CREATE TABLE ADMISSIONS
   dischtime TIMESTAMP(0) NOT NULL,
   deathtime TIMESTAMP(0),
   admission_type VARCHAR(40) NOT NULL,
-  admission_location VARCHAR(60) NOT NULL,
-  discharge_location VARCHAR(60) NOT NULL,
+  admission_location VARCHAR(60),
+  discharge_location VARCHAR(60),
   insurance VARCHAR(255) NOT NULL,
   language VARCHAR(10),
   marital_status VARCHAR(80),
   ethnicity VARCHAR(80) NOT NULL,
   edregtime TIMESTAMP(0),
   edouttime TIMESTAMP(0),
-  hospital_expire_flag SMALLINT
+  hospital_expire_flag SMALLINT,
+  CONSTRAINT adm_hadm_pk PRIMARY KEY (hadm_id),
+  CONSTRAINT adm_hadm_unique UNIQUE (hadm_id)
 ) ;
 
 --------------------------------------------------------
@@ -41,7 +44,9 @@ CREATE TABLE PATIENTS
 	anchor_age INT,
   	anchor_year INT,
   	anchor_year_group VARCHAR(255),
-	dod TIMESTAMP(0)
+	dod TIMESTAMP(0),
+	CONSTRAINT pat_subid_unique UNIQUE (subject_id),
+	CONSTRAINT pat_subid_pk PRIMARY KEY (subject_id)
 ) ;
 
 --------------------------------------------------------
@@ -53,12 +58,12 @@ CREATE TABLE TRANSFERS
 (
 	subject_id INT NOT NULL,
 	hadm_id INT NOT NULL,
-	stay_id INT,
   	transfer_id INT,
-	eventtype VARCHAR(10),
+	eventtype VARCHAR(20),
 	careunit VARCHAR(255),
 	intime TIMESTAMP(0),
-	outtime TIMESTAMP(0)
+	outtime TIMESTAMP(0),
+	CONSTRAINT transfers_subid_transid_pk PRIMARY KEY (subject_id,transfer_id)
 ) ;
 
 --------------------------------------------------------
@@ -71,7 +76,9 @@ CREATE TABLE D_HCPCS
 	code CHAR(5),
 	category SMALLINT,
 	long_description TEXT,
-	short_description VARCHAR(180)
+	short_description VARCHAR(180),
+	CONSTRAINT d_hcpcs_code_unique UNIQUE (code),
+	CONSTRAINT d_hcpcs_code_pk PRIMARY KEY (code)
 ) ;
 
 --------------------------------------------------------
@@ -83,7 +90,8 @@ CREATE TABLE D_ICD_DIAGNOSES
 (
 	icd_code VARCHAR(10) NOT NULL,
 	icd_version INT NOT NULL,
-	long_title VARCHAR(300) NOT NULL
+	long_title VARCHAR(300) NOT NULL,
+	CONSTRAINT d_icd_diagonses_icd_code_version_pk PRIMARY KEY (icd_code,icd_version)
 ) ;
 
 --------------------------------------------------------
@@ -95,7 +103,8 @@ CREATE TABLE D_ICD_PROCEDURES
 (
 	icd_code VARCHAR(10) NOT NULL,
 	icd_version INT NOT NULL,
-	long_title VARCHAR(300) NOT NULL
+	long_title VARCHAR(300) NOT NULL,
+	CONSTRAINT d_icd_procedures_icd_code_pk PRIMARY KEY (icd_code)
 ) ;
 
 --------------------------------------------------------
@@ -109,7 +118,8 @@ CREATE TABLE D_LABITEMS
 	label VARCHAR(50) NOT NULL,
 	fluid VARCHAR(50) NOT NULL,
 	category VARCHAR(50) NOT NULL,
-	loinc_code VARCHAR(50)
+	loinc_code VARCHAR(50),
+	CONSTRAINT d_labitems_itemid_pk PRIMARY KEY (itemid)
 ) ;
 
 --------------------------------------------------------
@@ -144,21 +154,24 @@ CREATE TABLE DRGCODES
 
 --------------------------------------------------------
 --  DDL for Table EMAR
+-- pharmacy_id not mentioned
 --------------------------------------------------------
 
 DROP TABLE IF EXISTS EMAR CASCADE;
 CREATE TABLE EMAR
 (
 	subject_id INT NOT NULL,
-	hadm_id INT NOT NULL,
+	hadm_id INT,
 	emar_id VARCHAR(100) NOT NULL,
 	emar_seq INT NOT NULL,
 	poe_id VARCHAR(25) NOT NULL,
+	pharmacy_id INT,
 	charttime TIMESTAMP(0) NOT NULL,
 	medication TEXT,
 	event_txt TEXT,
 	scheduletime TIMESTAMP(0),
-	storetime TIMESTAMP(0) NOT NULL
+	storetime TIMESTAMP(0) NOT NULL,
+	CONSTRAINT emar_emar_id_pk PRIMARY KEY (emar_id)
 ) ;
 
 --------------------------------------------------------
@@ -220,548 +233,177 @@ CREATE TABLE HCPCSEVENTS
 
 --------------------------------------------------------
 --  DDL for Table LABEVENTS
+-- labevent_id not mentioned
 --------------------------------------------------------
 
 DROP TABLE IF EXISTS LABEVENTS CASCADE;
 CREATE TABLE LABEVENTS
 (
-	SUBJECT_ID INT NOT NULL,
-	HADM_ID INT,
-	ITEMID INT NOT NULL,
-	CHARTTIME TIMESTAMP(0),
-	VALUE VARCHAR(200),
-	VALUENUM DOUBLE PRECISION,
-	VALUEUOM VARCHAR(20),
-	FLAG VARCHAR(20),
-	CONSTRAINT labevents_rowid_pk PRIMARY KEY (ROW_ID)
+	labevent_id INT NOT NULL,
+	subject_id INT NOT NULL,
+	hadm_id INT,
+	stay_id INT,
+	spec_id INT NOT NULL,
+	itemid INT NOT NULL,
+	charttime TIMESTAMP(0) NOT NULL,
+	storetime TIMESTAMP(0),
+	value VARCHAR(200),,
+	valuenum DOUBLE PRECISION,
+	valueuom VARCHAR(20),
+	ref_range_lower DOUBLE PRECISION,
+	ref_range_upper DOUBLE PRECISION,
+	flag VARCHAR(10),
+	priority VARCHAR(7),
+	CONSTRAINT labevents_labeventid_pk PRIMARY KEY (labevent_id)
 ) ;
 
---------------------------------------------------------
---  DDL for Table MICROBIOLOGYEVENTS
---------------------------------------------------------
+CREATE TABLE labevents_1 ( CHECK ( labevent_id >= 0 AND labevent_id < 12500000 )) INHERITS (labevents);
+CREATE TABLE labevents_2 ( CHECK ( labevent_id >= 12500000 AND labevent_id < 25000000 )) INHERITS (labevents);
+CREATE TABLE labevents_3 ( CHECK ( labevent_id >= 25000000 AND labevent_id < 37500000 )) INHERITS (labevents);
+CREATE TABLE labevents_4 ( CHECK ( labevent_id >= 37500000 AND labevent_id < 50000000 )) INHERITS (labevents);
+CREATE TABLE labevents_5 ( CHECK ( labevent_id >= 50000000 AND labevent_id < 62500000 )) INHERITS (labevents);
+CREATE TABLE labevents_6 ( CHECK ( labevent_id >= 62500000 AND labevent_id < 75000000 )) INHERITS (labevents);
+CREATE TABLE labevents_7 ( CHECK ( labevent_id >= 75000000 AND labevent_id < 87500000 )) INHERITS (labevents);
+CREATE TABLE labevents_8 ( CHECK ( labevent_id >= 87500000 AND labevent_id < 100000000 )) INHERITS (labevents);
+CREATE TABLE labevents_9 ( CHECK ( labevent_id >= 100000000 AND labevent_id < 112500000 )) INHERITS (labevents);
+CREATE TABLE labevents_10 ( CHECK ( labevent_id >= 112500000 AND labevent_id < 125000000 )) INHERITS (labevents);
 
-DROP TABLE IF EXISTS MICROBIOLOGYEVENTS CASCADE;
-CREATE TABLE MICROBIOLOGYEVENTS
-(
-  ROW_ID INT NOT NULL,
-	SUBJECT_ID INT NOT NULL,
-	HADM_ID INT,
-	CHARTDATE TIMESTAMP(0),
-	CHARTTIME TIMESTAMP(0),
-	SPEC_ITEMID INT,
-	SPEC_TYPE_DESC VARCHAR(100),
-	ORG_ITEMID INT,
-	ORG_NAME VARCHAR(100),
-	ISOLATE_NUM SMALLINT,
-	AB_ITEMID INT,
-	AB_NAME VARCHAR(30),
-	DILUTION_TEXT VARCHAR(10),
-	DILUTION_COMPARISON VARCHAR(20),
-	DILUTION_VALUE DOUBLE PRECISION,
-	INTERPRETATION VARCHAR(5),
-	CONSTRAINT micro_rowid_pk PRIMARY KEY (ROW_ID)
-) ;
 
---------------------------------------------------------
---  DDL for Table CALLOUT
---------------------------------------------------------
 
-DROP TABLE IF EXISTS CALLOUT CASCADE;
-CREATE TABLE CALLOUT
-(
-  ROW_ID INT NOT NULL,
-  SUBJECT_ID INT NOT NULL,
-  HADM_ID INT NOT NULL,
-  SUBMIT_WARDID INT,
-  SUBMIT_CAREUNIT VARCHAR(15),
-  CURR_WARDID INT,
-  CURR_CAREUNIT VARCHAR(15),
-  CALLOUT_WARDID INT,
-  CALLOUT_SERVICE VARCHAR(10) NOT NULL,
-  REQUEST_TELE SMALLINT NOT NULL,
-  REQUEST_RESP SMALLINT NOT NULL,
-  REQUEST_CDIFF SMALLINT NOT NULL,
-  REQUEST_MRSA SMALLINT NOT NULL,
-  REQUEST_VRE SMALLINT NOT NULL,
-  CALLOUT_STATUS VARCHAR(20) NOT NULL,
-  CALLOUT_OUTCOME VARCHAR(20) NOT NULL,
-  DISCHARGE_WARDID INT,
-  ACKNOWLEDGE_STATUS VARCHAR(20) NOT NULL,
-  CREATETIME TIMESTAMP(0) NOT NULL,
-  UPDATETIME TIMESTAMP(0) NOT NULL,
-  ACKNOWLEDGETIME TIMESTAMP(0),
-  OUTCOMETIME TIMESTAMP(0) NOT NULL,
-  FIRSTRESERVATIONTIME TIMESTAMP(0),
-  CURRENTRESERVATIONTIME TIMESTAMP(0),
-  CONSTRAINT callout_rowid_pk PRIMARY KEY (ROW_ID)
-) ;
-
---------------------------------------------------------
---  DDL for Table CAREGIVERS
---------------------------------------------------------
-
-DROP TABLE IF EXISTS CAREGIVERS CASCADE;
-CREATE TABLE CAREGIVERS
-(
-  ROW_ID INT NOT NULL,
-	CGID INT NOT NULL,
-	LABEL VARCHAR(15),
-	DESCRIPTION VARCHAR(30),
-	CONSTRAINT cg_rowid_pk  PRIMARY KEY (ROW_ID),
-	CONSTRAINT cg_cgid_unique UNIQUE (CGID)
-) ;
-
---------------------------------------------------------
---  DDL for Table CHARTEVENTS
---------------------------------------------------------
-
-DROP TABLE IF EXISTS CHARTEVENTS CASCADE;
-CREATE TABLE CHARTEVENTS
-(
-  ROW_ID INT NOT NULL,
-	SUBJECT_ID INT NOT NULL,
-	HADM_ID INT,
-	ICUSTAY_ID INT,
-	ITEMID INT,
-	CHARTTIME TIMESTAMP(0),
-	STORETIME TIMESTAMP(0),
-	CGID INT,
-	VALUE VARCHAR(255),
-	VALUENUM DOUBLE PRECISION,
-	VALUEUOM VARCHAR(50),
-	WARNING INT,
-	ERROR INT,
-	RESULTSTATUS VARCHAR(50),
-	STOPPED VARCHAR(50),
-	CONSTRAINT chartevents_rowid_pk PRIMARY KEY (ROW_ID)
-) ;
-
---------------------------------------------------------
---  PARTITION for Table CHARTEVENTS
---------------------------------------------------------
-
--- CREATE CHARTEVENTS TABLE
- CREATE TABLE chartevents_1 ( CHECK ( itemid >= 0 AND itemid < 127 )) INHERITS (chartevents);
- CREATE TABLE chartevents_2 ( CHECK ( itemid >= 127 AND itemid < 210 )) INHERITS (chartevents);
- CREATE TABLE chartevents_3 ( CHECK ( itemid >= 210 AND itemid < 425 )) INHERITS (chartevents);
- CREATE TABLE chartevents_4 ( CHECK ( itemid >= 425 AND itemid < 549 )) INHERITS (chartevents);
- CREATE TABLE chartevents_5 ( CHECK ( itemid >= 549 AND itemid < 643 )) INHERITS (chartevents);
- CREATE TABLE chartevents_6 ( CHECK ( itemid >= 643 AND itemid < 741 )) INHERITS (chartevents);
- CREATE TABLE chartevents_7 ( CHECK ( itemid >= 741 AND itemid < 1483 )) INHERITS (chartevents);
- CREATE TABLE chartevents_8 ( CHECK ( itemid >= 1483 AND itemid < 3458 )) INHERITS (chartevents);
- CREATE TABLE chartevents_9 ( CHECK ( itemid >= 3458 AND itemid < 3695 )) INHERITS (chartevents);
- CREATE TABLE chartevents_10 ( CHECK ( itemid >= 3695 AND itemid < 8440 )) INHERITS (chartevents);
- CREATE TABLE chartevents_11 ( CHECK ( itemid >= 8440 AND itemid < 8553 )) INHERITS (chartevents);
- CREATE TABLE chartevents_12 ( CHECK ( itemid >= 8553 AND itemid < 220274 )) INHERITS (chartevents);
- CREATE TABLE chartevents_13 ( CHECK ( itemid >= 220274 AND itemid < 223921 )) INHERITS (chartevents);
- CREATE TABLE chartevents_14 ( CHECK ( itemid >= 223921 AND itemid < 224085 )) INHERITS (chartevents);
- CREATE TABLE chartevents_15 ( CHECK ( itemid >= 224085 AND itemid < 224859 )) INHERITS (chartevents);
- CREATE TABLE chartevents_16 ( CHECK ( itemid >= 224859 AND itemid < 227629 )) INHERITS (chartevents);
- CREATE TABLE chartevents_17 ( CHECK ( itemid >= 227629 AND itemid < 999999999 )) INHERITS (chartevents);
-
--- CREATE CHARTEVENTS TRIGGER
-CREATE OR REPLACE FUNCTION chartevents_insert_trigger()
+CREATE OR REPLACE FUNCTION labevents_insert_trigger()
 RETURNS TRIGGER AS $$
 BEGIN
-IF ( NEW.itemid >= 0 AND NEW.itemid < 127 ) THEN INSERT INTO chartevents_1 VALUES (NEW.*);
-ELSIF ( NEW.itemid >= 127 AND NEW.itemid < 210 ) THEN INSERT INTO chartevents_2 VALUES (NEW.*);
-ELSIF ( NEW.itemid >= 210 AND NEW.itemid < 425 ) THEN INSERT INTO chartevents_3 VALUES (NEW.*);
-ELSIF ( NEW.itemid >= 425 AND NEW.itemid < 549 ) THEN INSERT INTO chartevents_4 VALUES (NEW.*);
-ELSIF ( NEW.itemid >= 549 AND NEW.itemid < 643 ) THEN INSERT INTO chartevents_5 VALUES (NEW.*);
-ELSIF ( NEW.itemid >= 643 AND NEW.itemid < 741 ) THEN INSERT INTO chartevents_6 VALUES (NEW.*);
-ELSIF ( NEW.itemid >= 741 AND NEW.itemid < 1483 ) THEN INSERT INTO chartevents_7 VALUES (NEW.*);
-ELSIF ( NEW.itemid >= 1483 AND NEW.itemid < 3458 ) THEN INSERT INTO chartevents_8 VALUES (NEW.*);
-ELSIF ( NEW.itemid >= 3458 AND NEW.itemid < 3695 ) THEN INSERT INTO chartevents_9 VALUES (NEW.*);
-ELSIF ( NEW.itemid >= 3695 AND NEW.itemid < 8440 ) THEN INSERT INTO chartevents_10 VALUES (NEW.*);
-ELSIF ( NEW.itemid >= 8440 AND NEW.itemid < 8553 ) THEN INSERT INTO chartevents_11 VALUES (NEW.*);
-ELSIF ( NEW.itemid >= 8553 AND NEW.itemid < 220274 ) THEN INSERT INTO chartevents_12 VALUES (NEW.*);
-ELSIF ( NEW.itemid >= 220274 AND NEW.itemid < 223921 ) THEN INSERT INTO chartevents_13 VALUES (NEW.*);
-ELSIF ( NEW.itemid >= 223921 AND NEW.itemid < 224085 ) THEN INSERT INTO chartevents_14 VALUES (NEW.*);
-ELSIF ( NEW.itemid >= 224085 AND NEW.itemid < 224859 ) THEN INSERT INTO chartevents_15 VALUES (NEW.*);
-ELSIF ( NEW.itemid >= 224859 AND NEW.itemid < 227629 ) THEN INSERT INTO chartevents_16 VALUES (NEW.*);
-ELSIF ( NEW.itemid >= 227629 AND NEW.itemid < 999999999 ) THEN INSERT INTO chartevents_17 VALUES (NEW.*);
+IF ( NEW.labevent_id >= 0 AND NEW.labevent_id < 12500000 ) THEN INSERT INTO labevents_1 VALUES (NEW.*);
+ELSIF ( NEW.labevent_id >= 12500000 AND NEW.labevent_id < 25000000 ) THEN INSERT INTO labevents_2 VALUES (NEW.*);
+ELSIF ( NEW.labevent_id >= 25000000 AND NEW.labevent_id < 37500000 ) THEN INSERT INTO labevents_3 VALUES (NEW.*);
+ELSIF ( NEW.labevent_id >= 37500000 AND NEW.labevent_id < 50000000 ) THEN INSERT INTO labevents_4 VALUES (NEW.*);
+ELSIF ( NEW.labevent_id >= 50000000 AND NEW.labevent_id < 62500000 ) THEN INSERT INTO labevents_5 VALUES (NEW.*);
+ELSIF ( NEW.labevent_id >= 62500000 AND NEW.labevent_id < 75000000 ) THEN INSERT INTO labevents_6 VALUES (NEW.*);
+ELSIF ( NEW.labevent_id >= 75000000 AND NEW.labevent_id < 87500000 ) THEN INSERT INTO labevents_7 VALUES (NEW.*);
+ELSIF ( NEW.labevent_id >= 87500000 AND NEW.labevent_id < 100000000 ) THEN INSERT INTO labevents_8 VALUES (NEW.*);
+ELSIF ( NEW.labevent_id >= 100000000 AND NEW.labevent_id < 112500000 ) THEN INSERT INTO labevents_9 VALUES (NEW.*);
+ELSIF ( NEW.labevent_id >= 112500000 AND NEW.labevent_id < 125000000 ) THEN INSERT INTO labevents_10 VALUES (NEW.*);
 ELSE
-	INSERT INTO chartevents_null VALUES (NEW.*);
+	INSERT INTO labevents_null VALUES (NEW.*);
 END IF;
 RETURN NULL;
 END;
 $$
 LANGUAGE plpgsql;
 
-CREATE TRIGGER insert_chartevents_trigger
-    BEFORE INSERT ON chartevents
-    FOR EACH ROW EXECUTE PROCEDURE chartevents_insert_trigger();
-
---------------------------------------------------------
---  DDL for Table CPTEVENTS
---------------------------------------------------------
-
-DROP TABLE IF EXISTS CPTEVENTS CASCADE;
-CREATE TABLE CPTEVENTS
-(
-  ROW_ID INT NOT NULL,
-	SUBJECT_ID INT NOT NULL,
-	HADM_ID INT NOT NULL,
-	COSTCENTER VARCHAR(10) NOT NULL,
-	CHARTDATE TIMESTAMP(0),
-	CPT_CD VARCHAR(10) NOT NULL,
-	CPT_NUMBER INT,
-	CPT_SUFFIX VARCHAR(5),
-	TICKET_ID_SEQ INT,
-	SECTIONHEADER VARCHAR(50),
-	SUBSECTIONHEADER VARCHAR(255),
-	DESCRIPTION VARCHAR(200),
-	CONSTRAINT cpt_rowid_pk PRIMARY KEY (ROW_ID)
-) ;
-
---------------------------------------------------------
---  DDL for Table DATETIMEEVENTS
---------------------------------------------------------
-
-DROP TABLE IF EXISTS DATETIMEEVENTS CASCADE;
-CREATE TABLE DATETIMEEVENTS
-(
-  ROW_ID INT NOT NULL,
-	SUBJECT_ID INT NOT NULL,
-	HADM_ID INT,
-	ICUSTAY_ID INT,
-	ITEMID INT NOT NULL,
-	CHARTTIME TIMESTAMP(0) NOT NULL,
-	STORETIME TIMESTAMP(0) NOT NULL,
-	CGID INT NOT NULL,
-	VALUE TIMESTAMP(0),
-	VALUEUOM VARCHAR(50) NOT NULL,
-	WARNING SMALLINT,
-	ERROR SMALLINT,
-	RESULTSTATUS VARCHAR(50),
-	STOPPED VARCHAR(50),
-	CONSTRAINT datetime_rowid_pk PRIMARY KEY (ROW_ID)
-) ;
-
---------------------------------------------------------
---  DDL for Table DIAGNOSES_ICD
---------------------------------------------------------
-
-DROP TABLE IF EXISTS DIAGNOSES_ICD CASCADE;
-CREATE TABLE DIAGNOSES_ICD
-(
-  ROW_ID INT NOT NULL,
-	SUBJECT_ID INT NOT NULL,
-	HADM_ID INT NOT NULL,
-	SEQ_NUM INT,
-	ICD9_CODE VARCHAR(10),
-	CONSTRAINT diagnosesicd_rowid_pk PRIMARY KEY (ROW_ID)
-) ;
-
---------------------------------------------------------
---  DDL for Table DRGCODES
---------------------------------------------------------
-
-DROP TABLE IF EXISTS DRGCODES CASCADE;
-CREATE TABLE DRGCODES
-(
-  ROW_ID INT NOT NULL,
-	SUBJECT_ID INT NOT NULL,
-	HADM_ID INT NOT NULL,
-	DRG_TYPE VARCHAR(20) NOT NULL,
-	DRG_CODE VARCHAR(20) NOT NULL,
-	DESCRIPTION VARCHAR(255),
-	DRG_SEVERITY SMALLINT,
-	DRG_MORTALITY SMALLINT,
-	CONSTRAINT drg_rowid_pk PRIMARY KEY (ROW_ID)
-) ;
-
---------------------------------------------------------
---  DDL for Table D_CPT
---------------------------------------------------------
-
-DROP TABLE IF EXISTS D_CPT CASCADE;
-CREATE TABLE D_CPT
-(
-  ROW_ID INT NOT NULL,
-	CATEGORY SMALLINT NOT NULL,
-	SECTIONRANGE VARCHAR(100) NOT NULL,
-	SECTIONHEADER VARCHAR(50) NOT NULL,
-	SUBSECTIONRANGE VARCHAR(100) NOT NULL,
-	SUBSECTIONHEADER VARCHAR(255) NOT NULL,
-	CODESUFFIX VARCHAR(5),
-	MINCODEINSUBSECTION INT NOT NULL,
-	MAXCODEINSUBSECTION INT NOT NULL,
-	CONSTRAINT dcpt_ssrange_unique UNIQUE (SUBSECTIONRANGE),
-	CONSTRAINT dcpt_rowid_pk PRIMARY KEY (ROW_ID)
-) ;
-
---------------------------------------------------------
---  DDL for Table D_ICD_DIAGNOSES
---------------------------------------------------------
-
-DROP TABLE IF EXISTS D_ICD_DIAGNOSES CASCADE;
-CREATE TABLE D_ICD_DIAGNOSES
-(
-  ROW_ID INT NOT NULL,
-	ICD9_CODE VARCHAR(10) NOT NULL,
-	SHORT_TITLE VARCHAR(50) NOT NULL,
-	LONG_TITLE VARCHAR(255) NOT NULL,
-	CONSTRAINT d_icd_diag_code_unique UNIQUE (ICD9_CODE),
-	CONSTRAINT d_icd_diag_rowid_pk PRIMARY KEY (ROW_ID)
-) ;
-
---------------------------------------------------------
---  DDL for Table D_ICD_PROCEDURES
---------------------------------------------------------
-
-DROP TABLE IF EXISTS D_ICD_PROCEDURES CASCADE;
-CREATE TABLE D_ICD_PROCEDURES
-(
-  ROW_ID INT NOT NULL,
-	ICD9_CODE VARCHAR(10) NOT NULL,
-	SHORT_TITLE VARCHAR(50) NOT NULL,
-	LONG_TITLE VARCHAR(255) NOT NULL,
-	CONSTRAINT d_icd_proc_code_unique UNIQUE (ICD9_CODE),
-	CONSTRAINT d_icd_proc_rowid_pk PRIMARY KEY (ROW_ID)
-) ;
-
---------------------------------------------------------
---  DDL for Table D_ITEMS
---------------------------------------------------------
-
-DROP TABLE IF EXISTS D_ITEMS CASCADE;
-CREATE TABLE D_ITEMS
-(
-  ROW_ID INT NOT NULL,
-	ITEMID INT NOT NULL,
-	LABEL VARCHAR(200),
-	ABBREVIATION VARCHAR(100),
-	DBSOURCE VARCHAR(20),
-	LINKSTO VARCHAR(50),
-	CATEGORY VARCHAR(100),
-	UNITNAME VARCHAR(100),
-	PARAM_TYPE VARCHAR(30),
-	CONCEPTID INT,
-	CONSTRAINT ditems_itemid_unique UNIQUE (ITEMID),
-	CONSTRAINT ditems_rowid_pk PRIMARY KEY (ROW_ID)
-) ;
-
---------------------------------------------------------
---  DDL for Table D_LABITEMS
---------------------------------------------------------
-
-DROP TABLE IF EXISTS D_LABITEMS CASCADE;
-CREATE TABLE D_LABITEMS
-(
-  ROW_ID INT NOT NULL,
-	ITEMID INT NOT NULL,
-	LABEL VARCHAR(100) NOT NULL,
-	FLUID VARCHAR(100) NOT NULL,
-	CATEGORY VARCHAR(100) NOT NULL,
-	LOINC_CODE VARCHAR(100),
-	CONSTRAINT dlabitems_itemid_unique UNIQUE (ITEMID),
-	CONSTRAINT dlabitems_rowid_pk PRIMARY KEY (ROW_ID)
-) ;
-
---------------------------------------------------------
---  DDL for Table ICUSTAYS
---------------------------------------------------------
-
-DROP TABLE IF EXISTS ICUSTAYS CASCADE;
-CREATE TABLE ICUSTAYS
-(
-  ROW_ID INT NOT NULL,
-	SUBJECT_ID INT NOT NULL,
-	HADM_ID INT NOT NULL,
-	ICUSTAY_ID INT NOT NULL,
-	DBSOURCE VARCHAR(20) NOT NULL,
-	FIRST_CAREUNIT VARCHAR(20) NOT NULL,
-	LAST_CAREUNIT VARCHAR(20) NOT NULL,
-	FIRST_WARDID SMALLINT NOT NULL,
-	LAST_WARDID SMALLINT NOT NULL,
-	INTIME TIMESTAMP(0) NOT NULL,
-	OUTTIME TIMESTAMP(0),
-	LOS DOUBLE PRECISION,
-	CONSTRAINT icustay_icustayid_unique UNIQUE (ICUSTAY_ID),
-	CONSTRAINT icustay_rowid_pk PRIMARY KEY (ROW_ID)
-) ;
-
---------------------------------------------------------
---  DDL for Table INPUTEVENTS_CV
---------------------------------------------------------
-
-DROP TABLE IF EXISTS INPUTEVENTS_CV CASCADE;
-CREATE TABLE INPUTEVENTS_CV
-(
-  ROW_ID INT NOT NULL,
-	SUBJECT_ID INT NOT NULL,
-	HADM_ID INT,
-	ICUSTAY_ID INT,
-	CHARTTIME TIMESTAMP(0),
-	ITEMID INT,
-	AMOUNT DOUBLE PRECISION,
-	AMOUNTUOM VARCHAR(30),
-	RATE DOUBLE PRECISION,
-	RATEUOM VARCHAR(30),
-	STORETIME TIMESTAMP(0),
-	CGID INT,
-	ORDERID INT,
-	LINKORDERID INT,
-	STOPPED VARCHAR(30),
-	NEWBOTTLE INT,
-	ORIGINALAMOUNT DOUBLE PRECISION,
-	ORIGINALAMOUNTUOM VARCHAR(30),
-	ORIGINALROUTE VARCHAR(30),
-	ORIGINALRATE DOUBLE PRECISION,
-	ORIGINALRATEUOM VARCHAR(30),
-	ORIGINALSITE VARCHAR(30),
-	CONSTRAINT inputevents_cv_rowid_pk PRIMARY KEY (ROW_ID)
-) ;
-
---------------------------------------------------------
---  DDL for Table INPUTEVENTS_MV
---------------------------------------------------------
-
-DROP TABLE IF EXISTS INPUTEVENTS_MV CASCADE;
-CREATE TABLE INPUTEVENTS_MV
-(
-  ROW_ID INT NOT NULL,
-	SUBJECT_ID INT NOT NULL,
-	HADM_ID INT,
-	ICUSTAY_ID INT,
-	STARTTIME TIMESTAMP(0),
-	ENDTIME TIMESTAMP(0),
-	ITEMID INT,
-	AMOUNT DOUBLE PRECISION,
-	AMOUNTUOM VARCHAR(30),
-	RATE DOUBLE PRECISION,
-	RATEUOM VARCHAR(30),
-	STORETIME TIMESTAMP(0),
-	CGID INT,
-	ORDERID INT,
-	LINKORDERID INT,
-	ORDERCATEGORYNAME VARCHAR(100),
-	SECONDARYORDERCATEGORYNAME VARCHAR(100),
-	ORDERCOMPONENTTYPEDESCRIPTION VARCHAR(200),
-	ORDERCATEGORYDESCRIPTION VARCHAR(50),
-	PATIENTWEIGHT DOUBLE PRECISION,
-	TOTALAMOUNT DOUBLE PRECISION,
-	TOTALAMOUNTUOM VARCHAR(50),
-	ISOPENBAG SMALLINT,
-	CONTINUEINNEXTDEPT SMALLINT,
-	CANCELREASON SMALLINT,
-	STATUSDESCRIPTION VARCHAR(30),
-	COMMENTS_EDITEDBY VARCHAR(30),
-	COMMENTS_CANCELEDBY VARCHAR(40),
-	COMMENTS_DATE TIMESTAMP(0),
-	ORIGINALAMOUNT DOUBLE PRECISION,
-	ORIGINALRATE DOUBLE PRECISION,
-	CONSTRAINT inputevents_mv_rowid_pk PRIMARY KEY (ROW_ID)
-) ;
-
---------------------------------------------------------
---  DDL for Table LABEVENTS
---------------------------------------------------------
-
-DROP TABLE IF EXISTS LABEVENTS CASCADE;
-CREATE TABLE LABEVENTS
-(
-  ROW_ID INT NOT NULL,
-	SUBJECT_ID INT NOT NULL,
-	HADM_ID INT,
-	ITEMID INT NOT NULL,
-	CHARTTIME TIMESTAMP(0),
-	VALUE VARCHAR(200),
-	VALUENUM DOUBLE PRECISION,
-	VALUEUOM VARCHAR(20),
-	FLAG VARCHAR(20),
-	CONSTRAINT labevents_rowid_pk PRIMARY KEY (ROW_ID)
-) ;
+    CREATE TRIGGER insert_labevents_trigger
+    BEFORE INSERT ON labevents
+    FOR EACH ROW EXECUTE PROCEDURE labevents_insert_trigger();
 
 --------------------------------------------------------
 --  DDL for Table MICROBIOLOGYEVENTS
+--  microevent_id, micro_specimen_id and comments not mentioned 
 --------------------------------------------------------
 
 DROP TABLE IF EXISTS MICROBIOLOGYEVENTS CASCADE;
 CREATE TABLE MICROBIOLOGYEVENTS
 (
-  ROW_ID INT NOT NULL,
-	SUBJECT_ID INT NOT NULL,
-	HADM_ID INT,
-	CHARTDATE TIMESTAMP(0),
-	CHARTTIME TIMESTAMP(0),
-	SPEC_ITEMID INT,
-	SPEC_TYPE_DESC VARCHAR(100),
-	ORG_ITEMID INT,
-	ORG_NAME VARCHAR(100),
-	ISOLATE_NUM SMALLINT,
-	AB_ITEMID INT,
-	AB_NAME VARCHAR(30),
-	DILUTION_TEXT VARCHAR(10),
-	DILUTION_COMPARISON VARCHAR(20),
-	DILUTION_VALUE DOUBLE PRECISION,
-	INTERPRETATION VARCHAR(5),
-	CONSTRAINT micro_rowid_pk PRIMARY KEY (ROW_ID)
+	microevent_id INT NOT NULL,
+	subject_id INT NOT NULL,
+	hadm_id INT ,
+	micro_specimen_id INT NOT NULL,
+	chartdate TIMESTAMP(0) NOT NULL,
+	charttime TIMESTAMP(0) ,
+	spec_itemid INT NOT NULL,
+	spec_type_desc VARCHAR(100) NOT NULL,
+	test_seq INT NOT NULL,
+	storedate TIMESTAMP(0) ,
+	storetime TIMESTAMP(0) ,
+	test_itemid INT NOT NULL,
+	test_name VARCHAR(100) NOT NULL,
+	org_itemid INT ,
+	org_name VARCHAR(100) ,
+	isolate_num SMALLINT ,
+	quantity VARCHAR(50) ,
+	ab_itemid INT ,
+	ab_name VARCHAR(30) ,
+	dilution_text VARCHAR(10) ,
+	dilution_comparison VARCHAR(20) ,
+	dilution_value DOUBLE PRECISION ,
+	interpretation VARCHAR(5) ,
+	comments VARCHAR(5),
+	CONSTRAINT mbe_microevent_id_pk PRIMARY KEY (microevent_id)
 ) ;
 
+
 --------------------------------------------------------
---  DDL for Table NOTEEVENTS
+--  DDL for Table PHARMACY
 --------------------------------------------------------
 
-DROP TABLE IF EXISTS NOTEEVENTS CASCADE;
-CREATE TABLE NOTEEVENTS
+DROP TABLE IF EXISTS PHARMACY CASCADE;
+CREATE TABLE PHARMACY
 (
-  ROW_ID INT NOT NULL,
-	SUBJECT_ID INT NOT NULL,
-	HADM_ID INT,
-	CHARTDATE TIMESTAMP(0),
-	CHARTTIME TIMESTAMP(0),
-	STORETIME TIMESTAMP(0),
-	CATEGORY VARCHAR(50),
-	DESCRIPTION VARCHAR(255),
-	CGID INT,
-	ISERROR CHAR(1),
-	TEXT TEXT,
-	CONSTRAINT noteevents_rowid_pk PRIMARY KEY (ROW_ID)
+	subject_id INT NOT NULL,
+	hadm_id INT NOT NULL,
+	pharmacy_id INT NOT NULL,
+	poe_id VARCHAR(25) ,
+	starttime TIMESTAMP(0) ,
+	stoptime TIMESTAMP(0) ,
+	medication VARCHAR(100) ,
+	proc_type VARCHAR(50) NOT NULL,
+	status VARCHAR(50) NOT NULL,
+	entertime TIMESTAMP(0) NOT NULL,
+	verifiedtime TIMESTAMP(0) ,
+	route VARCHAR(30),
+	frequency VARCHAR(30) ,
+	disp_sched VARCHAR(100) ,
+	infusion_type VARCHAR(15) ,
+	sliding_scale VARCHAR(5) ,
+	lockout_interval VARCHAR(50) ,
+	basal_rate  DOUBLE PRECISION,
+	one_hr_max  VARCHAR(30), 
+	doses_per_24_hrs DOUBLE PRECISION ,
+	duration DOUBLE PRECISION,
+	duration_interval VARCHAR(50) ,
+	expiration_val INT ,
+	expiration_unit VARCHAR(50) ,
+	expirationdate TIMESTAMP(0) ,
+	dispensation VARCHAR(50) ,
+	fill_quantity VARCHAR(30),
+	CONSTRAINT pharmacy_pharmacy_pk PRIMARY KEY (pharmacy_id)
 ) ;
 
+
 --------------------------------------------------------
---  DDL for Table OUTPUTEVENTS
+--  DDL for Table POE
 --------------------------------------------------------
 
-DROP TABLE IF EXISTS OUTPUTEVENTS CASCADE;
-CREATE TABLE OUTPUTEVENTS
+DROP TABLE IF EXISTS POE CASCADE;
+CREATE TABLE POE
 (
-  ROW_ID INT NOT NULL,
-	SUBJECT_ID INT NOT NULL,
-	HADM_ID INT,
-	ICUSTAY_ID INT,
-	CHARTTIME TIMESTAMP(0),
-	ITEMID INT,
-	VALUE DOUBLE PRECISION,
-	VALUEUOM VARCHAR(30),
-	STORETIME TIMESTAMP(0),
-	CGID INT,
-	STOPPED VARCHAR(30),
-	NEWBOTTLE CHAR(1),
-	ISERROR INT,
-	CONSTRAINT outputevents_cv_rowid_pk PRIMARY KEY (ROW_ID)
+	poe_id VARCHAR(25) NOT NULL,
+	poe_seq INT NOT NULL,
+	subject_id INT NOT NULL,
+	hadm_id INT NOT NULL,
+	ordertime TIMESTAMP(0) NOT NULL,
+	order_type VARCHAR(25),
+	order_subtype VARCHAR(50) ,
+	transaction_type VARCHAR(15),
+	discontinue_of_poe_id VARCHAR(25) ,
+	discontinued_by_poe_id VARCHAR(25) ,
+	order_status VARCHAR(15) ,
+	CONSTRAINT poe_poe_id_pk PRIMARY KEY (poe_id)
 ) ;
 
 --------------------------------------------------------
---  DDL for Table PATIENTS
+--  DDL for Table POE_DETAIL
 --------------------------------------------------------
 
-DROP TABLE IF EXISTS PATIENTS CASCADE;
-CREATE TABLE PATIENTS
+DROP TABLE IF EXISTS POE_DETAIL CASCADE;
+CREATE TABLE POE_DETAIL
 (
-  ROW_ID INT NOT NULL,
-	SUBJECT_ID INT NOT NULL,
-	GENDER VARCHAR(5) NOT NULL,
-	DOB TIMESTAMP(0) NOT NULL,
-	DOD TIMESTAMP(0),
-	DOD_HOSP TIMESTAMP(0),
-	DOD_SSN TIMESTAMP(0),
-	EXPIRE_FLAG INT NOT NULL,
-	CONSTRAINT pat_subid_unique UNIQUE (SUBJECT_ID),
-	CONSTRAINT pat_rowid_pk PRIMARY KEY (ROW_ID)
+	poe_id VARCHAR(25) NOT NULL,
+	poe_seq INT NOT NULL,
+	subject_id INT NOT NULL,
+	field_name VARCHAR(255),
+	field_value TEXT
 ) ;
+
 
 --------------------------------------------------------
 --  DDL for Table PRESCRIPTIONS
@@ -770,61 +412,23 @@ CREATE TABLE PATIENTS
 DROP TABLE IF EXISTS PRESCRIPTIONS CASCADE;
 CREATE TABLE PRESCRIPTIONS
 (
-  ROW_ID INT NOT NULL,
-	SUBJECT_ID INT NOT NULL,
-	HADM_ID INT NOT NULL,
-	ICUSTAY_ID INT,
-	STARTDATE TIMESTAMP(0),
-	ENDDATE TIMESTAMP(0),
-	DRUG_TYPE VARCHAR(100) NOT NULL,
-	DRUG VARCHAR(100) NOT NULL,
-	DRUG_NAME_POE VARCHAR(100),
-	DRUG_NAME_GENERIC VARCHAR(100),
-	FORMULARY_DRUG_CD VARCHAR(120),
-	GSN VARCHAR(200),
-	NDC VARCHAR(120),
-	PROD_STRENGTH VARCHAR(120),
-	DOSE_VAL_RX VARCHAR(120),
-	DOSE_UNIT_RX VARCHAR(120),
-	FORM_VAL_DISP VARCHAR(120),
-	FORM_UNIT_DISP VARCHAR(120),
-	ROUTE VARCHAR(120),
-	CONSTRAINT prescription_rowid_pk PRIMARY KEY (ROW_ID)
-) ;
-
---------------------------------------------------------
---  DDL for Table PROCEDUREEVENTS_MV
---------------------------------------------------------
-
-DROP TABLE IF EXISTS PROCEDUREEVENTS_MV CASCADE;
-CREATE TABLE PROCEDUREEVENTS_MV
-(
-  ROW_ID INT NOT NULL,
-	SUBJECT_ID INT NOT NULL,
-	HADM_ID INT NOT NULL,
-	ICUSTAY_ID INT,
-	STARTTIME TIMESTAMP(0),
-	ENDTIME TIMESTAMP(0),
-	ITEMID INT,
-	VALUE DOUBLE PRECISION,
-	VALUEUOM VARCHAR(30),
-	LOCATION VARCHAR(30),
-	LOCATIONCATEGORY VARCHAR(30),
-	STORETIME TIMESTAMP(0),
-	CGID INT,
-	ORDERID INT,
-	LINKORDERID INT,
-	ORDERCATEGORYNAME VARCHAR(100),
-	SECONDARYORDERCATEGORYNAME VARCHAR(100),
-	ORDERCATEGORYDESCRIPTION VARCHAR(50),
-	ISOPENBAG SMALLINT,
-	CONTINUEINNEXTDEPT SMALLINT,
-	CANCELREASON SMALLINT,
-	STATUSDESCRIPTION VARCHAR(30),
-	COMMENTS_EDITEDBY VARCHAR(30),
-	COMMENTS_CANCELEDBY VARCHAR(30),
-	COMMENTS_DATE TIMESTAMP(0),
-	CONSTRAINT procedureevents_mv_rowid_pk PRIMARY KEY (ROW_ID)
+	subject_id INT NOT NULL,
+	hadm_id INT NOT NULL,
+	pharmacy_id INT NOT NULL,
+	starttime TIMESTAMP(0) ,
+	stoptime TIMESTAMP(0) ,
+	drug_type VARCHAR(10) NOT NULL,
+	drug VARCHAR(100) ,
+	gsn VARCHAR(250) , 
+	ndc VARCHAR(20) ,
+	prod_strength VARCHAR(120) ,
+	form_rx  VARCHAR(10),
+	dose_val_rx VARCHAR(50) ,
+	dose_unit_rx VARCHAR(50) ,
+	form_val_disp VARCHAR(30) ,
+	form_unit_disp VARCHAR(30) ,
+	doses_per_24_hrs DOUBLE PRECISION ,
+	route VARCHAR(30)
 ) ;
 
 --------------------------------------------------------
@@ -834,12 +438,11 @@ CREATE TABLE PROCEDUREEVENTS_MV
 DROP TABLE IF EXISTS PROCEDURES_ICD CASCADE;
 CREATE TABLE PROCEDURES_ICD
 (
-  ROW_ID INT NOT NULL,
-	SUBJECT_ID INT NOT NULL,
-	HADM_ID INT NOT NULL,
-	SEQ_NUM INT NOT NULL,
-	ICD9_CODE VARCHAR(10) NOT NULL,
-	CONSTRAINT proceduresicd_rowid_pk PRIMARY KEY (ROW_ID)
+	subject_id INT NOT NULL,
+	hadm_id INT NOT NULL,
+	seq_num INT,
+	icd_code CHAR(7),
+	icd_version INT
 ) ;
 
 --------------------------------------------------------
@@ -849,34 +452,211 @@ CREATE TABLE PROCEDURES_ICD
 DROP TABLE IF EXISTS SERVICES CASCADE;
 CREATE TABLE SERVICES
 (
-  ROW_ID INT NOT NULL,
-	SUBJECT_ID INT NOT NULL,
-	HADM_ID INT NOT NULL,
-	TRANSFERTIME TIMESTAMP(0) NOT NULL,
-	PREV_SERVICE VARCHAR(20),
-	CURR_SERVICE VARCHAR(20),
-	CONSTRAINT services_rowid_pk PRIMARY KEY (ROW_ID)
+	subject_id INT NOT NULL,
+	hadm_id INT NOT NULL,
+	transfertime TIMESTAMP(0) NOT NULL,
+	prev_service VARCHAR(20) ,
+	curr_service VARCHAR(20) NOT NULL
 ) ;
 
 --------------------------------------------------------
---  DDL for Table TRANSFERS
+--  DDL for Table D_ITEMS
 --------------------------------------------------------
 
-DROP TABLE IF EXISTS TRANSFERS CASCADE;
-CREATE TABLE TRANSFERS
+DROP TABLE IF EXISTS D_ITEMS CASCADE;
+CREATE TABLE D_ITEMS
 (
-  ROW_ID INT NOT NULL,
-	SUBJECT_ID INT NOT NULL,
-	HADM_ID INT NOT NULL,
-	ICUSTAY_ID INT,
-	DBSOURCE VARCHAR(20),
-	EVENTTYPE VARCHAR(20),
-	PREV_CAREUNIT VARCHAR(20),
-	CURR_CAREUNIT VARCHAR(20),
-	PREV_WARDID SMALLINT,
-	CURR_WARDID SMALLINT,
-	INTIME TIMESTAMP(0),
-	OUTTIME TIMESTAMP(0),
-	LOS DOUBLE PRECISION,
-	CONSTRAINT transfers_rowid_pk PRIMARY KEY (ROW_ID)
+	itemid INT NOT NULL,
+	label VARCHAR(200) NOT NULL,
+	abbreviation VARCHAR(100) NOT NULL,
+	linksto VARCHAR(50) NOT NULL,
+	category VARCHAR(100) NOT NULL,
+	unitname VARCHAR(100),
+	param_type VARCHAR(30) NOT NULL,
+	lownormalvalue DOUBLE PRECISION,
+	highnormalvalue DOUBLE PRECISION,
+	CONSTRAINT ditems_itemid_unique UNIQUE (itemid),
+	CONSTRAINT ditems_itemid_pk PRIMARY KEY (itemid)
 ) ;
+
+--------------------------------------------------------
+--  DDL for Table CHARTEVENTS
+--------------------------------------------------------
+
+DROP TABLE IF EXISTS CHARTEVENTS CASCADE;
+CREATE TABLE CHARTEVENTS
+(
+	subject_id INT NOT NULL,
+	hadm_id INT NOT NULL,
+	stay_id INT NOT NULL,
+	charttime TIMESTAMP(0) NOT NULL,
+	storetime TIMESTAMP(0) ,
+	itemid INT NOT NULL,
+	value VARCHAR(160) ,
+	valuenum DOUBLE PRECISION,
+	valueuom VARCHAR(20),
+	warning SMALLINT NOT NULL
+) ;
+
+CREATE TABLE chartevents_1 ( CHECK ( itemid >= 220000 AND itemid < 221000 )) INHERITS (chartevents);
+CREATE TABLE chartevents_2 ( CHECK ( itemid >= 221000 AND itemid < 222000 )) INHERITS (chartevents);
+CREATE TABLE chartevents_3 ( CHECK ( itemid >= 222000 AND itemid < 223000 )) INHERITS (chartevents);
+CREATE TABLE chartevents_4 ( CHECK ( itemid >= 223000 AND itemid < 224000 )) INHERITS (chartevents);
+CREATE TABLE chartevents_5 ( CHECK ( itemid >= 224000 AND itemid < 225000 )) INHERITS (chartevents);
+CREATE TABLE chartevents_6 ( CHECK ( itemid >= 225000 AND itemid < 226000 )) INHERITS (chartevents);
+CREATE TABLE chartevents_7 ( CHECK ( itemid >= 226000 AND itemid < 227000 )) INHERITS (chartevents);
+CREATE TABLE chartevents_8 ( CHECK ( itemid >= 227000 AND itemid < 228000 )) INHERITS (chartevents);
+CREATE TABLE chartevents_9 ( CHECK ( itemid >= 228000 AND itemid < 229000 )) INHERITS (chartevents);
+CREATE TABLE chartevents_10 ( CHECK ( itemid >= 229000 AND itemid < 230000 )) INHERITS (chartevents);
+
+
+CREATE OR REPLACE FUNCTION chartevents_insert_trigger()
+RETURNS TRIGGER AS $$
+BEGIN
+IF ( NEW.itemid >= 220000 AND NEW.itemid < 221000 ) THEN INSERT INTO chartevents_1 VALUES (NEW.*);
+ELSIF ( NEW.itemid >= 221000 AND NEW.itemid < 222000 ) THEN INSERT INTO chartevents_2 VALUES (NEW.*);
+ELSIF ( NEW.itemid >= 222000 AND NEW.itemid < 223000 ) THEN INSERT INTO chartevents_3 VALUES (NEW.*);
+ELSIF ( NEW.itemid >= 223000 AND NEW.itemid < 224000 ) THEN INSERT INTO chartevents_4 VALUES (NEW.*);
+ELSIF ( NEW.itemid >= 224000 AND NEW.itemid < 225000 ) THEN INSERT INTO chartevents_5 VALUES (NEW.*);
+ELSIF ( NEW.itemid >= 225000 AND NEW.itemid < 226000 ) THEN INSERT INTO chartevents_6 VALUES (NEW.*);
+ELSIF ( NEW.itemid >= 226000 AND NEW.itemid < 227000 ) THEN INSERT INTO chartevents_7 VALUES (NEW.*);
+ELSIF ( NEW.itemid >= 227000 AND NEW.itemid < 228000 ) THEN INSERT INTO chartevents_8 VALUES (NEW.*);
+ELSIF ( NEW.itemid >= 228000 AND NEW.itemid < 229000 ) THEN INSERT INTO chartevents_9 VALUES (NEW.*);
+ELSIF ( NEW.itemid >= 229000 AND NEW.itemid < 230000 ) THEN INSERT INTO chartevents_10 VALUES (NEW.*);
+ELSE
+	INSERT INTO chartevents_null VALUES (NEW.*);
+END IF;
+RETURN NULL;
+END;
+$$
+LANGUAGE plpgsql;
+
+    CREATE TRIGGER insert_chartevents_trigger
+    BEFORE INSERT ON chartevents
+    FOR EACH ROW EXECUTE PROCEDURE chartevents_insert_trigger();
+
+--------------------------------------------------------
+--  DDL for Table DATETIMEEVENTS
+--------------------------------------------------------
+
+DROP TABLE IF EXISTS DATETIMEEVENTS CASCADE;
+CREATE TABLE DATETIMEEVENTS
+(
+	subject_id INT NOT NULL,
+	hadm_id INT,
+	stay_id INT,
+	charttime TIMESTAMP(0) NOT NULL,
+	storetime TIMESTAMP(0) NOT NULL,
+	itemid INT NOT NULL,
+	value TIMESTAMP(0) NOT NULL,
+	valueuom VARCHAR(50) NOT NULL,
+	warning SMALLINT NOT NULL
+) ;
+
+
+--------------------------------------------------------
+--  DDL for Table ICUSTAYS
+--------------------------------------------------------
+
+DROP TABLE IF EXISTS ICUSTAYS CASCADE;
+CREATE TABLE ICUSTAYS
+(
+	subject_id INT NOT NULL,
+	hadm_id INT NOT NULL,
+	stay_id INT NOT NULL,
+	first_careunit VARCHAR(50) NOT NULL,
+	last_careunit VARCHAR(50) NOT NULL,
+	intime TIMESTAMP(0) NOT NULL,
+	outtime TIMESTAMP(0),
+	los DOUBLE PRECISION,
+	CONSTRAINT icustay_stayid_unique UNIQUE (stay_id),
+	CONSTRAINT icustay_stayid_unique PRIMARY KEY (stay_id)
+) ;
+
+--------------------------------------------------------
+--  DDL for Table INPUTEVENTS
+--------------------------------------------------------
+
+DROP TABLE IF EXISTS INPUTEVENTS CASCADE;
+CREATE TABLE INPUTEVENTS
+(
+	subject_id INT NOT NULL,
+	hadm_id INT NOT NULL,
+	stay_id INT NOT NULL,
+	starttime TIMESTAMP(0) NOT NULL,
+	endtime TIMESTAMP(0) NOT NULL,
+	storetime TIMESTAMP(0) NOT NULL,
+	itemid INT NOT NULL,
+	amount DOUBLE PRECISION NOT NULL,
+	amountuom VARCHAR(30) NOT NULL,
+	rate DOUBLE PRECISION,
+	rateuom VARCHAR(30),
+	orderid INT NOT NULL,
+	linkorderid INT NOT NULL,
+	ordercategoryname VARCHAR(100) NOT NULL,
+	secondaryordercategoryname VARCHAR(100),
+	ordercomponenttypedescription VARCHAR(200) NOT NULL,
+	ordercategorydescription VARCHAR(50) NOT NULL,
+	patientweight DOUBLE PRECISION NOT NULL,
+	totalamount DOUBLE PRECISION,
+	totalamountuom VARCHAR(50),
+	isopenbag SMALLINT NOT NULL,
+	continueinnextdept SMALLINT NOT NULL,
+	cancelreason SMALLINT NOT NULL,
+	statusdescription VARCHAR(30) NOT NULL,
+	originalamount DOUBLE PRECISION NOT NULL,
+	originalrate DOUBLE PRECISION NOT NULL
+) ;
+
+--------------------------------------------------------
+--  DDL for Table OUTPUTEVENTS
+--------------------------------------------------------
+
+DROP TABLE IF EXISTS OUTPUTEVENTS CASCADE;
+CREATE TABLE OUTPUTEVENTS
+(
+	subject_id INT NOT NULL,
+	hadm_id INT NOT NULL,
+	stay_id INT NOT NULL,
+	charttime TIMESTAMP(0) NOT NULL,
+	storetime TIMESTAMP(0) NOT NULL,
+	itemid INT NOT NULL,
+	value DOUBLE PRECISION NOT NULL,
+	valueuom VARCHAR(30) NOT NULL
+) ;
+
+--------------------------------------------------------
+--  DDL for Table PROCEDUREEVENTS
+--------------------------------------------------------
+
+DROP TABLE IF EXISTS PROCEDUREEVENTS CASCADE;
+CREATE TABLE PROCEDUREEVENTS
+(
+	subject_id INT NOT NULL,
+	hadm_id INT NOT NULL,
+	stay_id INT NOT NULL,
+	starttime TIMESTAMP(0) NOT NULL,
+	endtime TIMESTAMP(0) NOT NULL,
+	storetime TIMESTAMP(0) NOT NULL,
+	itemid INT NOT NULL,
+	value DOUBLE PRECISION NOT NULL,
+	valueuom VARCHAR(30) NOT NULL,
+	location VARCHAR(30),
+	locationcategory VARCHAR(30),
+	orderid INT NOT NULL,
+	linkorderid INT NOT NULL,
+	ordercategoryname VARCHAR(100) NOT NULL,
+	secondaryordercategoryname VARCHAR(100),
+	ordercategorydescription VARCHAR(50) NOT NULL,
+	patientweight DOUBLE PRECISION NOT NULL,
+	totalamount DOUBLE PRECISION,
+	totalamountuom VARCHAR(50),
+	isopenbag SMALLINT NOT NULL,
+	continueinnextdept SMALLINT NOT NULL,
+	cancelreason SMALLINT NOT NULL,
+	statusdescroption VARCHAR(30) NOT NULL,
+	comments_date TIMESTAMP(0),
+	originalamount DOUBLE PRECISION NOT NULL,
+	originalrate DOUBLE PRECISION NOT NULL
+) ;
+
