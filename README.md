@@ -21,7 +21,7 @@ MIMIC-IV kida!
 
 Jump!
 
-* Official website:[url](https://mimic-iv.mit.edu/)
+* Official website: [url](https://mimic-iv.mit.edu/)
 
 * Official github: [url](https://github.com/MIT-LCP/mimic-iv)
 
