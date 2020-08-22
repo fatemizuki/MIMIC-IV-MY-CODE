@@ -242,8 +242,7 @@ CREATE TABLE LABEVENTS
 	labevent_id INT NOT NULL,
 	subject_id INT NOT NULL,
 	hadm_id INT,
-	stay_id INT,
-	spec_id INT NOT NULL,
+	specimen_id INT NOT NULL,
 	itemid INT NOT NULL,
 	charttime TIMESTAMP(0) NOT NULL,
 	storetime TIMESTAMP(0),
@@ -254,6 +253,7 @@ CREATE TABLE LABEVENTS
 	ref_range_upper DOUBLE PRECISION,
 	flag VARCHAR(10),
 	priority VARCHAR(7),
+	comments VARCHAR(620),
 	CONSTRAINT labevents_labeventid_pk PRIMARY KEY (labevent_id)
 ) ;
 
