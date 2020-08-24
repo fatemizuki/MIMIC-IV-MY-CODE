@@ -1,7 +1,7 @@
 安装
 ---
 ### 写在前面：
-1、以下方法使用的是postgreSQL 10的版本，有小伙伴提供说11，12版本使用以下方法会报错，可以使用压缩包的方法进行安装，详见Issues和MIMIC-III官方github中的一些方法 
+1、以下方法使用的是postgreSQL 10的版本，有小伙伴提供说11，12版本使用以下方法会报错，可以使用压缩包的方法进行安装，安装解压缩软件以及path设置步骤和MIMIC-III相同，load data阶段使用的是load_data_gz这个文件（感谢shaou77提供），详见Issues和MIMIC-III官方github
 
 2、安装的方法参考的是官方之前MIMIC-III的安装方法，稍有修改，本人电脑是mac air2017，windows我也不清楚会不会出现什么奇怪的错误...
 
