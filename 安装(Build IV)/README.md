@@ -36,3 +36,4 @@
 
 9、`\i …add_indexes.sql（add_indexes文件的路径）`例如：\i /Volumes/postgre/mimiciv/add_indexes.sql 这个过程也比较长，该玩玩该睡睡
 
+**第四步**：想用什么方法挖数据就用什么方法
