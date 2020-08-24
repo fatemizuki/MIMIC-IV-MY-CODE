@@ -9,15 +9,30 @@
 
 4、我没有写check的文件（懒），想检查是否安装错误可以对对bigquery中各个表的行数
 
-5.YIKUAN8大佬那也有安装的方法，他那好像更简单，我这里嫌麻烦也可以去[看看他的](https://github.com/YIKUAN8/MIMIC-IV-Postgres)
+5、YIKUAN8大佬那也有安装的方法，他那好像更简单，我这里嫌麻烦也可以去[看看他的](https://github.com/YIKUAN8/MIMIC-IV-Postgres)
 
 ---
 第一步:首先你需要安装postgreSQL 10,此过程略去
 
 第二步:打开psql,回车回车回车回车输密码回车
 
-第三步:按照以下顺序输代码
+第三步:按照以下顺序输代码,输完一行回车一行
 
 `DROP DATABASE IF EXISTS mimiciv;`
+
 `CREATE DATABASE mimiciv OWNER postgres;`
+
+`\c mimiciv;`
+
+`CREATE SCHEMA mimiciv;`
+
+`\i …create_tables.sql（create_tables文件的路径）`
+
+`\set ON_ERROR_STOP 1`
+
+`\set datadir '…（你存放表格的路径）'`
+
+`\i …load_data.sql（load_data文件的路径）`
+
+`\i …add_indexes.sql（add_indexes文件的路径）`
 
