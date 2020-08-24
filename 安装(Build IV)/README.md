@@ -30,10 +30,20 @@
 
 6、`\set ON_ERROR_STOP 1`
 
-7、`\set datadir '…（你存放表格的路径）'` 例如：\i /Volumes/postgre/mimiciv
+7、`\set datadir '…（你存放辣么多表格的路径）'` 例如：\i /Volumes/postgre/mimiciv
 
 8、`\i …load_data.sql（load_data文件的路径）` 例如：\i /Volumes/postgre/mimiciv/load_data.sql 这个过程比较长，该吃吃该喝喝
 
 9、`\i …add_indexes.sql（add_indexes文件的路径）`例如：\i /Volumes/postgre/mimiciv/add_indexes.sql 这个过程也比较长，该玩玩该睡睡
 
 **第四步**：想用什么方法挖数据就用什么方法
+
+---
+### 注意事项：
+1、\i 后面有空格！！！
+2、大小写区分！！！
+3、报错先看看自己代码抄错没！！！
+
+
+
+
