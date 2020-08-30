@@ -26,6 +26,8 @@
 
 4、`CREATE SCHEMA mimiciv;`
 
+4.5、`\encoding 'UTF8'`  接各位使用windows小伙伴反应，使用windows需要加这句话，mac不需要
+
 5、`\i …create_tables.sql（create_tables文件的路径）` 例如：\i /Volumes/postgre/mimiciv/create_tables.sql
 
 6、`\set ON_ERROR_STOP 1`
