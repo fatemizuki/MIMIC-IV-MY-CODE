@@ -23,18 +23,18 @@
 
 -- SELECT 
 -- 	CASE WHEN anchor_age < 18 THEN '<18'
--- 		WHEN anchor_age >= 18 and anchor_age < 60 THEN '18-60'
--- 		WHEN anchor_age >= 60 and anchor_age < 90 THEN '60-89'
--- 		WHEN anchor_age > 90 THEN '>90'
--- 		ELSE NULL END AS age
+-- 	WHEN anchor_age >= 18 and anchor_age < 60 THEN '18-60'
+-- 	WHEN anchor_age >= 60 and anchor_age < 90 THEN '60-89'
+-- 	WHEN anchor_age > 90 THEN '>90'
+-- 	ELSE NULL END AS age
 -- 	, count(*) AS patients_number
 -- FROM patients
 -- GROUP BY 
 -- 	CASE WHEN anchor_age < 18 THEN '<18'
--- 		WHEN anchor_age >= 18 and anchor_age < 60 THEN '18-60'
--- 		WHEN anchor_age >= 60 and anchor_age < 90 THEN '60-89'
--- 		WHEN anchor_age > 90 THEN '>90'
--- 		ELSE NULL END
+-- 	WHEN anchor_age >= 18 and anchor_age < 60 THEN '18-60'
+-- 	WHEN anchor_age >= 60 and anchor_age < 90 THEN '60-89'
+-- 	WHEN anchor_age > 90 THEN '>90'
+-- 	ELSE NULL END
 
 
 -- -- 4. anchor_year_group分组
