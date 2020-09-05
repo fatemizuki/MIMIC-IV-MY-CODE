@@ -11,6 +11,7 @@
 
 -- -- 2. ICD-9大类
 -- -- 2. ICD-9
+
 -- 以下是国际疾病与相关健康问题统计分类（ICD）第九版的编码列表：
 -- * ICD-9编码列表 (001-139)：传染病和寄生虫疾病  infectious and parasitic diseases
 -- * ICD-9编码列表 (140-239)：赘生物 
@@ -45,27 +46,27 @@
 -- )
 -- SELECT *
 --     , CASE WHEN count_number BETWEEN 1 AND 1270 THEN 1  -- 传染病和寄生虫疾病
---     WHEN count_number BETWEEN 1271 AND 2258 THEN 2  -- 赘生物
---     WHEN count_number BETWEEN 2259 AND 2593 THEN 3  -- 内分泌、营养、新陈代谢及免疫系统疾病
---     WHEN count_number BETWEEN 2594 AND 2716 THEN 4  -- 血液及造血器官疾病
---     WHEN count_number BETWEEN 2717 AND 3193 THEN 5  -- 精神失常
---     WHEN count_number BETWEEN 3194 AND 3605 THEN 6  -- 神经系统疾病
---     WHEN count_number BETWEEN 3606 AND 4592 THEN 7  -- 感觉器官疾病
---     WHEN count_number BETWEEN 4593 AND 5066 THEN 8  -- 循环系统疾病
---     WHEN count_number BETWEEN 5067 AND 5321 THEN 9  -- 呼吸系统疾病
---     WHEN count_number BETWEEN 5322 AND 5917 THEN 10  -- 消化系统疾病
---     WHEN count_number BETWEEN 5918 AND 6306 THEN 11  -- 泌尿生殖系统疾病
---     WHEN count_number BETWEEN 6307 AND 7410 THEN 12  -- 妊娠、分娩和产后合并症
---     WHEN count_number BETWEEN 7411 AND 7614 THEN 13  -- 皮肤及皮下组织疾病
---     WHEN count_number BETWEEN 7615 AND 8506 THEN 14  -- 肌肉骨骼系统及结缔组织疾病
---     WHEN count_number BETWEEN 8507 AND 8927 THEN 15  -- 先天畸形
---     WHEN count_number BETWEEN 8928 AND 9208 THEN 16  -- 围产期引起的特定情况
---     WHEN count_number BETWEEN 9209 AND 9580 THEN 17  -- 症候、征候及不明情况
---     WHEN count_number BETWEEN 9581 AND 12167 THEN 18  -- 受伤及中毒
---     WHEN count_number BETWEEN 12168 AND 13458 THEN 19  -- 外因
---     WHEN count_number BETWEEN 13459 AND 14567 THEN 20  -- 补充分类
---     ELSE NULL END AS icd_9_number
---     FROM icd_9
+--       WHEN count_number BETWEEN 1271 AND 2258 THEN 2  -- 赘生物
+--       WHEN count_number BETWEEN 2259 AND 2593 THEN 3  -- 内分泌、营养、新陈代谢及免疫系统疾病
+--       WHEN count_number BETWEEN 2594 AND 2716 THEN 4  -- 血液及造血器官疾病
+--       WHEN count_number BETWEEN 2717 AND 3193 THEN 5  -- 精神失常
+--       WHEN count_number BETWEEN 3194 AND 3605 THEN 6  -- 神经系统疾病
+--       WHEN count_number BETWEEN 3606 AND 4592 THEN 7  -- 感觉器官疾病
+--       WHEN count_number BETWEEN 4593 AND 5066 THEN 8  -- 循环系统疾病
+--       WHEN count_number BETWEEN 5067 AND 5321 THEN 9  -- 呼吸系统疾病
+--       WHEN count_number BETWEEN 5322 AND 5917 THEN 10  -- 消化系统疾病
+--       WHEN count_number BETWEEN 5918 AND 6306 THEN 11  -- 泌尿生殖系统疾病
+--       WHEN count_number BETWEEN 6307 AND 7410 THEN 12  -- 妊娠、分娩和产后合并症
+--       WHEN count_number BETWEEN 7411 AND 7614 THEN 13  -- 皮肤及皮下组织疾病
+--       WHEN count_number BETWEEN 7615 AND 8506 THEN 14  -- 肌肉骨骼系统及结缔组织疾病
+--       WHEN count_number BETWEEN 8507 AND 8927 THEN 15  -- 先天畸形
+--       WHEN count_number BETWEEN 8928 AND 9208 THEN 16  -- 围产期引起的特定情况
+--       WHEN count_number BETWEEN 9209 AND 9580 THEN 17  -- 症候、征候及不明情况
+--       WHEN count_number BETWEEN 9581 AND 12167 THEN 18  -- 受伤及中毒
+--       WHEN count_number BETWEEN 12168 AND 13458 THEN 19  -- 外因
+--       WHEN count_number BETWEEN 13459 AND 14567 THEN 20  -- 补充分类
+--       ELSE NULL END AS icd_9_number
+-- FROM icd_9
 
 
 -- -- 3. ICD-10大类
@@ -84,24 +85,24 @@
 -- )
 -- SELECT *
 --     , CASE WHEN count_number BETWEEN 1 AND 1058 THEN 1  -- 001-139 A/B
---     WHEN count_number BETWEEN 1059 AND 2719 THEN 2  -- 140-239 C/D
---     WHEN count_number BETWEEN 2971 AND 3878 THEN 3  -- 240-279 E
---     WHEN count_number BETWEEN 2720 AND 2970 THEN 4  -- 280-289 D
---     WHEN count_number BETWEEN 3879 AND 4625 THEN 5  -- 290-319 F
---     WHEN count_number BETWEEN 4626 AND 5247 THEN 6  -- 320-359 G
---     WHEN count_number BETWEEN 5248 AND 8506 THEN 7  -- 360-389 H
---     WHEN count_number BETWEEN 8507 AND 9884 THEN 8  -- 390-459 I
---     WHEN count_number BETWEEN 9885 AND 10225 THEN 9  -- 460-519 J
---     WHEN count_number BETWEEN 10226 AND 11024 THEN 10  -- 520-579 K
---     WHEN count_number BETWEEN 18383 AND 19054 THEN 11  -- 580-629 N
---     WHEN count_number BETWEEN 19055 AND 21321 THEN 12  -- 630-679 O
---     WHEN count_number BETWEEN 11025 AND 11895 THEN 13  -- 680-709 L
---     WHEN count_number BETWEEN 11896 AND 18382 THEN 14  -- 710-739 M
---     WHEN count_number BETWEEN 21765 AND 22602 THEN 15  -- 740-759 Q
---     WHEN count_number BETWEEN 21322 AND 21764 THEN 16  -- 760-779 P
---     WHEN count_number BETWEEN 22603 AND 23324 THEN 17  -- 780-799 R
---     WHEN count_number BETWEEN 23325 AND 63978 THEN 18  -- 800-999 S/T
---     WHEN count_number BETWEEN 63979 AND 70918 THEN 19  -- E V-Y
---     WHEN count_number BETWEEN 70919 AND 72184 THEN 20  -- V Z
---     ELSE NULL END AS icd_10_number
---     FROM icd_10
+--       WHEN count_number BETWEEN 1059 AND 2719 THEN 2  -- 140-239 C/D
+--       WHEN count_number BETWEEN 2971 AND 3878 THEN 3  -- 240-279 E
+--       WHEN count_number BETWEEN 2720 AND 2970 THEN 4  -- 280-289 D
+--       WHEN count_number BETWEEN 3879 AND 4625 THEN 5  -- 290-319 F
+--       WHEN count_number BETWEEN 4626 AND 5247 THEN 6  -- 320-359 G
+--       WHEN count_number BETWEEN 5248 AND 8506 THEN 7  -- 360-389 H
+--       WHEN count_number BETWEEN 8507 AND 9884 THEN 8  -- 390-459 I
+--       WHEN count_number BETWEEN 9885 AND 10225 THEN 9  -- 460-519 J
+--       WHEN count_number BETWEEN 10226 AND 11024 THEN 10  -- 520-579 K
+--       WHEN count_number BETWEEN 18383 AND 19054 THEN 11  -- 580-629 N
+--       WHEN count_number BETWEEN 19055 AND 21321 THEN 12  -- 630-679 O
+--       WHEN count_number BETWEEN 11025 AND 11895 THEN 13  -- 680-709 L
+--       WHEN count_number BETWEEN 11896 AND 18382 THEN 14  -- 710-739 M
+--       WHEN count_number BETWEEN 21765 AND 22602 THEN 15  -- 740-759 Q
+--       WHEN count_number BETWEEN 21322 AND 21764 THEN 16  -- 760-779 P
+--       WHEN count_number BETWEEN 22603 AND 23324 THEN 17  -- 780-799 R
+--       WHEN count_number BETWEEN 23325 AND 63978 THEN 18  -- 800-999 S/T
+--       WHEN count_number BETWEEN 63979 AND 70918 THEN 19  -- E V-Y
+--       WHEN count_number BETWEEN 70919 AND 72184 THEN 20  -- V Z
+--       ELSE NULL END AS icd_10_number
+-- FROM icd_10
