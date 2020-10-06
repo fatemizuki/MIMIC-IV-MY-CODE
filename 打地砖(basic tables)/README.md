@@ -25,3 +25,7 @@
 
 ### first_day_urine_output
 
+1、需要前置表urine_output
+
+
+
