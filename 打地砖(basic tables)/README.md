@@ -44,3 +44,8 @@
 ### first_day_weight：
 
 1、需要前置表weight_durations
+
+### first_day_height:
+
+1、需要前置表height：ROUND里需要加CAST函数，同上
+
