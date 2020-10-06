@@ -59,6 +59,14 @@
 
 1、需要前置表bg：记得给INTERVAL后面的数字加引号
 
+---
+
+## others:
+
+### ventilator_setting:
+
+1、最后一个select增加stay_id
+
 
 
 
