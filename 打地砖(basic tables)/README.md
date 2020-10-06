@@ -37,4 +37,10 @@
               when itemid in (223762) and valuenum > 10 and valuenum < 50  then valuenum else null end) AS NUMERIC)
     , 2) as temperature
 
+### first_day_rrt
 
+1、需要前置表rrt
+
+### first_day_weight
+
+1、需要前置表weight_durations
