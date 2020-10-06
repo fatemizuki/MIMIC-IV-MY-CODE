@@ -27,5 +27,14 @@
 
 1、需要前置表urine_output
 
+### first_day_vitalsign
+
+1、需要前置表vitalsign
+
+2、对于postgreSQL来说，vitalsign中的ROUND函数里，需要使用CAST函数，具体修改： 
+, ROUND(
+      CAST(AVG(case when itemid in (223761) and valuenum > 70 and valuenum < 120 then (valuenum-32)/1.8 -- converted to degC in valuenum call
+              when itemid in (223762) and valuenum > 10 and valuenum < 50  then valuenum else null end) AS NUMERIC)
+    , 2) as temperature
 
 
