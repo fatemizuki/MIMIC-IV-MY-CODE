@@ -55,6 +55,10 @@
 
 2、first_day_gcs代码中删除最后的endotrachflag
 
+### first_day_bg/first_day_bg_art:
+
+1、需要前置表bg：记得给INTERVAL后面的数字加引号
+
 
 
 
