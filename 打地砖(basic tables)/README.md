@@ -23,11 +23,11 @@
 
 3、如果使用postgreSQL没有DATATIME_SUB和DATATIME_ADD这两个函数，直接改成加号或减号就行，例如SUB的那句改成ie.intime - INTERVAL '6' HOUR（后面也有表有同样的问题，操作是一样的，就不多说了）
 
-### first_day_urine_output
+### first_day_urine_output：
 
 1、需要前置表urine_output
 
-### first_day_vitalsign
+### first_day_vitalsign：
 
 1、需要前置表vitalsign
 
@@ -37,10 +37,10 @@
               when itemid in (223762) and valuenum > 10 and valuenum < 50  then valuenum else null end) AS NUMERIC)
     , 2) as temperature
 
-### first_day_rrt
+### first_day_rrt：
 
 1、需要前置表rrt
 
-### first_day_weight
+### first_day_weight：
 
 1、需要前置表weight_durations
