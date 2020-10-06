@@ -1,4 +1,4 @@
-### 基础表格
+## 基础表格
 ---
 这个文件夹主要是一些基础表格，主要还是MIMIC-III中转换过来的，详细代码可以参考MIMIC-III的官网（见首页的readme）
 
@@ -11,7 +11,15 @@
 
 2、FROM之后的表名需要修改，修改成本地你保存的这个表的名字
 
+---
 
-first_day：
+### first_day：
 
 first_day_lab：
+
+1、需要前置表complete_blood_count, chemistry, blood_differential, coagulation, enzyme
+
+2、platelets需要修改成platelet
+
+3、如果使用postgreSQL没有DATATIME_SUB和DATATIME_ADD这两个函数，直接改成加号或减号就行，例如SUB的那句改成ie.intime - INTERVAL '6' HOUR
+
