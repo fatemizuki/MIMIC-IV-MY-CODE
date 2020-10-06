@@ -49,3 +49,13 @@
 
 1、需要前置表height：ROUND里需要加CAST函数，同上
 
+### first_day_gcs:
+
+1、需要前置表gcs：INTERVAL '6' HOUR，原代码里6没有打引号，要加个引号
+
+2、first_day_gcs代码中删除最后的endotrachflag
+
+
+
+
+
