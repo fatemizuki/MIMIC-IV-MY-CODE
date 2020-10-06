@@ -21,5 +21,5 @@ first_day_lab：
 
 2、platelets需要修改成platelet
 
-3、如果使用postgreSQL没有DATATIME_SUB和DATATIME_ADD这两个函数，直接改成加号或减号就行，例如SUB的那句改成ie.intime - INTERVAL '6' HOUR
+3、如果使用postgreSQL没有DATATIME_SUB和DATATIME_ADD这两个函数，直接改成加号或减号就行，例如SUB的那句改成ie.intime - INTERVAL '6' HOUR（后面也有表有同样的问题，操作是一样的，就不多说了）
 
