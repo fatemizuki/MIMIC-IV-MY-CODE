@@ -67,7 +67,29 @@
 
 1、最后一个select增加stay_id
 
+### inflammation:
 
+1、目前只有crp
+
+### oxygen_delivery
+
+---
+
+## medication:
+
+### dobutamine --> medication_dobutamine
+
+### dopamine --> medication_dopamine
+
+### epinephrine --> medication_epinephrine
+
+### neuroblock --> medication_neuroblock
+
+### norepinephrine --> medication_norepinephrine
+
+### phenylephrine --> medication_phenylephrine
+
+### vasopression --> medication_vasopression
 
 
 
