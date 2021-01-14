@@ -79,6 +79,9 @@
 
 1、有创监测操作
 
+### age:中间datetime_diff那句话不适用于postgreSQL，更改为 , (EXTRACT(year FROM ad.admittime) - pa.anchor_year + pa.anchor_age) AS age
+
+
 ---
 
 ## medication:
