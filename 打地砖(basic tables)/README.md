@@ -106,6 +106,10 @@
 
 2、DATETIME_DIFF的地方也需要修改成EXTRACT函数，类似如上的操作方法
 
+### kdigo_stages
+
+1、需要前置表kdigo_creatinine和kdigo_uo
+
 ---
 
 ## medication:
