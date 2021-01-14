@@ -7,7 +7,7 @@
 
 官方的表有几个需要重复修改的地方我写在这里，大家可以自行修改
 
-1、一般在跑表之前我会写上：DROP MATERIALIZED VIEW IF EXISTS 表名; CREATE MATERIALIZED VIEW 表名 AS
+1、一般在跑表之前我会写上：DROP MATERIALIZED VIEW IF EXISTS 表名 CASCADE; CREATE MATERIALIZED VIEW 表名 AS
 
 2、FROM之后的表名需要修改，修改成本地你保存的这个表的名字
 
