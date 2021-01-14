@@ -83,6 +83,18 @@
 
 1、中间datetime_diff那句话不适用于postgreSQL，更改为 , (EXTRACT(year FROM ad.admittime) - pa.anchor_year + pa.anchor_age) AS age
 
+### urine_output
+
+### urine_output_rate
+
+1、需要前置表urine_output
+
+2、diff的部分可以改成extract的语句
+如：DATETIME_DIFF(io.charttime, iosum.charttime, HOUR) <= 5 改成 (EXTRACT (epoch FROM(io.charttime - iosum.charttime) /60/60)) <= 5
+如：DATETIME_DIFF(charttime, intime_hr, MINUTE) 改成 EXTRACT(minute from charttime) -  EXTRACT(minute from intime_hr)
+
+3、84-86行ROUND内需加CAST 
+如：ROUND(uo_tm_6hr, 2) AS uo_tm_6hr 改成 ROUND(CAST(uo_tm_6hr AS numeric), 2) AS uo_tm_6hr
 
 ---
 
