@@ -83,7 +83,6 @@
 
 1、中间datetime_diff那句话不适用于postgreSQL，更改为 , (EXTRACT(year FROM ad.admittime) - pa.anchor_year + pa.anchor_age) AS age
 
-### urine_output
 
 ### urine_output_rate
 
@@ -95,6 +94,17 @@
 
 3、84-86行ROUND内需加CAST 
 如：ROUND(uo_tm_6hr, 2) AS uo_tm_6hr 改成 ROUND(CAST(uo_tm_6hr AS numeric), 2) AS uo_tm_6hr
+
+---
+## organ_failure
+
+### kdigo_creatinine
+
+### kdigo_uo
+
+1、需要前置表urine_output和weight_durations
+
+2、DATETIME_DIFF的地方也需要修改成EXTRACT函数，类似如上的操作方法
 
 ---
 
